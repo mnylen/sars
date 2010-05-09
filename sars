@@ -1,0 +1,11 @@
+#!/bin/sh
+config_path="$HOME/.sars/$1"
+
+if test -r $config_path
+then
+    cat "$config_path" > "$HOME/.sarsrc"
+    . $HOME/.sarsrc
+    echo "changed to named version '$1'"
+else
+    echo "$0 : config file '$config_path' was not found"
+fi
