@@ -1,11 +1,59 @@
 #!/bin/sh
-config_path="$HOME/.sars/$1"
+INI_FILE="$HOME/.sars.ini"
+parse_ini()
+{
+    eval `sed -e 's/[[:space:]]*\=[[:space:]]*/=/g' \
+        -e 's/;.*$//' \
+        -e 's/[[:space:]]*$//' \
+        -e 's/^[[:space:]]*//' \
+        -e "s/^\(.*\)=\([^\"']*\)$/\1=\"\2\"/" \
+       < $INI_FILE \
+    | sed -n -e "/^\[$INI_SECTION\]/,/^\s*\[/{/^[^;].*\=.*/p;}"`
+}
 
-if test -r $config_path
+symlink_executables()
+{
+    find $ruby_path -not -wholename $ruby_path | \
+        while read target
+        do
+            destination="$ruby_dst_path/`basename $target`"
+            echo "creating symlink from $target to $destination"
+
+            ln -s $target $destination 
+        done 
+}
+
+delete_symlinks()
+{
+    find $ruby_dst_path -not -wholename $ruby_dst_path | \
+        while read target
+        do
+            rm $target
+        done
+
+    rm $gem_dst_path
+}
+
+if test -r $INI_FILE 
 then
-    cat "$config_path" > "$HOME/.sarsrc"
-    . $HOME/.sarsrc
-    echo "changed to named version '$1'"
+    # read the options for ruby and gem path
+    INI_SECTION=$1
+    parse_ini
+
+    # read the destinations paths
+    INI_SECTION="options"
+    parse_ini
+
+    # clear any previous links
+    delete_symlinks
+
+    # create symlinks for ruby executables
+    symlink_executables
+
+    # create symlink for gems
+    echo "creating symlink from $gem_path to $gem_dst_path"
+    ln -s $gem_path $gem_dst_path
 else
-    echo "$0 : config file '$config_path' was not found"
+    echo "$0 : no .sars.ini found from $HOME"
 fi
+

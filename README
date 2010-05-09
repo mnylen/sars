@@ -1,1 +1,41 @@
+sars
+Simple (yArrr) Ruby Switcher
+version 0.0.1
 
+1. What?
+
+    sars is a simple command line script to make it easy to switch between
+    different Ruby versions and gems
+
+2. Installation
+
+   1. copy "sars" to some path existing in $PATH
+
+   2. create ".sars.ini" in your HOME folder (see example.sars.ini)
+
+   3. add ruby_dst_path and gem_dst_path/bin to $PATH in .bashrc/.profile/...
+
+   4. profit!1
+
+3. Configuration
+
+    Configuration is done in ~/.sars.ini. The [options] section contain
+    options for all configurations and it should specify the following
+    properties:
+
+        - ruby_dst_path - where to create symlinks of ruby executables
+
+        - gem_dst_path  - where to create symlink of the gem folder
+
+    Other sections configure different installations and gemset variations.
+    Each configuration section should contain:
+
+        - ruby_path - path to ruby executables
+        
+        - gem_path  - path to gems
+
+4. Roadmap
+
+    - error checking, automatic directory creation
+
+    - shortcut for adding configurations 
